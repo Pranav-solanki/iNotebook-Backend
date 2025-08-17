@@ -5,7 +5,7 @@ connectToMongoose();
 const app = express();
 
 app.use(express.json());
-const port = 3000;
+const port = 5000;
 
 app.get("/", (req, res) => {
   res.send("Hello World!");
