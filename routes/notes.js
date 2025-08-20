@@ -42,31 +42,51 @@ router.post(
 
 router.put("/updatenote/:id", fetchuser, async (req, res) => {
   try {
-      const { title, description, tag } = req.body;
-  const newnote = {};
-  if (title) {
-    newnote.title = title;
-  }
-  if (description) {
-    newnote.description = description;
-  }
-  if (tag) {
-    newnote.tag = tag;
-  }
-  let note = await Notes.findById(req.params.id);
-  if (!note) {
-    return res.status(404).send("not found");
-  }
-  if (note.user.toString() != req.user.id) {
-    return res.status(401).send("unauthorized");
-  }
-  note = await Notes.findByIdAndUpdate(req.params.id, { $set: newnote },{new:true});
-  res.json({note})
+    const { title, description, tag } = req.body;
+    const newnote = {};
+    if (title) {
+      newnote.title = title;
+    }
+    if (description) {
+      newnote.description = description;
+    }
+    if (tag) {
+      newnote.tag = tag;
+    }
+    let note = await Notes.findById(req.params.id);
+    if (!note) {
+      return res.status(404).send("not found");
+    }
+    if (note.user.toString() != req.user.id) {
+      return res.status(401).send("unauthorized");
+    }
+    note = await Notes.findByIdAndUpdate(
+      req.params.id,
+      { $set: newnote },
+      { new: true }
+    );
+    res.json({ note });
   } catch (error) {
-    console.error(error.message)
-    res.status(500).send("internal server issue")
+    console.error(error.message);
+    res.status(500).send("internal server issue");
   }
+});
 
+router.delete("/deletenote/:id", fetchuser, async (req, res) => {
+  try {
+    let note = await Notes.findById(req.params.id);
+    if (!note) {
+      return res.status(404).send("not found");
+    }
+    if (note.user.toString() != req.user.id) {
+      return res.status(401).send("unauthorized");
+    }
+    note = await Notes.findByIdAndDelete(req.params.id);
+    res.json({ success: "note has been deleted" });
+  } catch (error) {
+    console.error(error.message);
+    res.status(500).send("internal server issue");
+  }
 });
 
 module.exports = router;
