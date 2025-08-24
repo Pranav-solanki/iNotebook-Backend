@@ -1,11 +1,15 @@
 const connectToMongoose = require("./db");
 const express = require("express");
 connectToMongoose();
-
+const port = 5000;
 const app = express();
 
+let cors = require("cors");
+
 app.use(express.json());
-const port = 5000;
+app.use(cors());
+
+
 
 app.get("/", (req, res) => {
   res.send("Hello World!");
