@@ -17,9 +17,10 @@ router.post(
   ],
   async (req, res) => {
     // Check validation errors
+    let success = false;
     const result = validationResult(req);
     if (!result.isEmpty()) {
-      return res.status(400).json({ errors: result.array() });
+      return res.status(400).json({ success, errors: result.array() });
     }
     const salt = bcrypt.genSaltSync(10);
     const secpass = await bcrypt.hash(req.body.password, salt);
@@ -36,7 +37,8 @@ router.post(
         },
       };
       const authtoken = jwt.sign(data, jwt_key);
-      res.status(201).json({ authtoken }); // Success response
+      success = true;
+      res.status(201).json({ success, authtoken }); // Success response
     } catch (error) {
       console.error(error);
       res.status(500).json({ error: "Server error" });
@@ -50,19 +52,24 @@ router.post(
     body("password", "Password cant be blank").exists(),
   ],
   async (req, res) => {
+    let success = false;
     const result = validationResult(req);
     if (!result.isEmpty()) {
-      return res.status(400).json({ errors: result.array() });
+      return res.status(400).json({ success, errors: result.array() });
     }
     const { email, password } = req.body;
     try {
       let user = await User.findOne({ email });
       if (!user) {
-        return res.status(400).json({ error: "Enter valid credentials:" });
+        return res
+          .status(400)
+          .json({ success, error: "Enter valid credentials:" });
       }
       const passcomp = await bcrypt.compare(password, user.password);
       if (!passcomp) {
-        return res.status(400).json({ error: "Enter valid credentials:" });
+        return res
+          .status(400)
+          .json({ success, error: "Enter valid credentials:" });
       }
       const data = {
         user: {
@@ -70,7 +77,8 @@ router.post(
         },
       };
       const authtoken = jwt.sign(data, jwt_key);
-      res.status(201).json({ authtoken }); // Success response
+      success = true;
+      res.status(201).json({ success, authtoken }); // Success response
     } catch (error) {
       console.error(error);
       res.status(500).json({ error: "Server error" });
