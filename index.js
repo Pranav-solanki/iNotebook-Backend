@@ -1,6 +1,9 @@
+
 const connectToMongoose = require("./db");
 const express = require("express");
 connectToMongoose();
+// import dotenv from 'dotenv'
+// dotenv.config(); 
 const port = 5000;
 const app = express();
 
